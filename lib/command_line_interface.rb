@@ -47,6 +47,7 @@ EOF
   def home
     puts "Type 'add' to add resolution"
     puts "Type 'search' to search resolutions by category"
+    puts "Type 'edit' to edit resolutions"
     puts "Type 'all' to see all resolutions"
     puts "Type 'exit' to exit"
     input = gets.chomp
@@ -54,6 +55,8 @@ EOF
       addresolution
     elsif input == "search"
       search_by_category
+    elsif input == "edit"
+      edit_resolution
     elsif input == "all"
       allresolutions
     elsif input == "exit"
@@ -88,7 +91,29 @@ EOF
 
 
   def search_by_category
+    puts "Type in category to search for resolution: "
+    input = gets.chomp
 
+    category = Category.find_or_create_by(name: input)
+    ResolutionCategory.where(category: category).each do |c|
+      puts c.resolution.content
+    end
+
+  end
+
+  def edit_resolution
+    puts "Enter the resolution you would like to edit: "
+    input = gets.chomp
+
+    if Resolution.exists?(content: input)
+      puts "Enter edited version of resolution: "
+      new_resolution_content = gets.chomp
+      old_resolution = Resolution.find_by(content: input)
+      old_resolution.update(content: new_resolution_content)
+    else
+      puts "This resolution does not exist."
+      home
+    end
   end
 
 
@@ -116,7 +141,7 @@ EOF
     fireworks
     show2019
     greet
-    binding.pry
+    #binding.pry
     home
   end
 

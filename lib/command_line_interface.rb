@@ -45,10 +45,11 @@ EOF
 
 
   def home
-    puts "Type 'add' to add resolution"
+    puts "Type 'add' to add a resolution"
     puts "Type 'search' to search resolutions by category"
-    puts "Type 'edit' to edit resolutions"
+    puts "Type 'edit' to edit a resolution"
     puts "Type 'all' to see all resolutions"
+    puts "Type 'delete' to delete a resolution"
     puts "Type 'exit' to exit"
     input = gets.chomp
     if input == "add"
@@ -59,6 +60,8 @@ EOF
       edit_resolution
     elsif input == "all"
       allresolutions
+    elsif input == "delete"
+      delete_resolution
     elsif input == "exit"
       puts "Have a happy new year!!"
     elsif input == "fireworks"
@@ -68,7 +71,7 @@ EOF
       show2019
       home
     else
-      puts "invalid input, try again"
+      puts "Invalid input, Try again"
       home
     end
   end
@@ -77,7 +80,7 @@ EOF
   def addresolution
     puts "What is your resolution for 2019?"
     resolution = gets.chomp
-    puts "Enter categories for this resolution seperated by commas"
+    puts "Enter categories for this resolution seperated by commas: "
     categories = gets.chomp
 
     new_resolution = Resolution.find_or_create_by(content: resolution)
@@ -87,6 +90,7 @@ EOF
       c = Category.find_or_create_by(name: c)
       new_resolution.categories << c
     end
+    home
   end
 
 
@@ -98,7 +102,7 @@ EOF
     ResolutionCategory.where(category: category).each do |c|
       puts c.resolution.content
     end
-
+    home
   end
 
   def edit_resolution
@@ -110,10 +114,26 @@ EOF
       new_resolution_content = gets.chomp
       old_resolution = Resolution.find_by(content: input)
       old_resolution.update(content: new_resolution_content)
+      home
     else
       puts "This resolution does not exist."
       home
     end
+  end
+
+  def delete_resolution
+    puts "Enter the resolution you would like to delete: "
+    input = gets.chomp
+
+    if Resolution.exists?(content: input)
+      delete_resolution = Resolution.find_by(content: input)
+      delete_resolution.destroy
+      home
+    else
+      puts "This resolution does not exist."
+      home
+    end
+
   end
 
 
@@ -126,6 +146,7 @@ EOF
       i += 1
       #puts "  categories: #{r.categories.name}"
     end
+    home
   end
 
 

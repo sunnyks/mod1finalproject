@@ -40,15 +40,17 @@ EOF
   end
 
   def greet
-    puts "Welcome to 2019!!!!!🎉🏮🎇🎆2️⃣ 0  ️⃣1️ ⃣9️ ⃣👶🏽"
+    puts "Welcome to 2019!!!!!🎉🎇🎆 2️⃣ 0️⃣ 1️⃣ 9️⃣ 👶 🎉🎇🎆"
   end
 
 
   def home
+    puts "\n"
     puts "Type 'add' to add a resolution"
     puts "Type 'search' to search resolutions by category"
-    puts "Type 'edit' to edit a resolution"
     puts "Type 'all' to see all resolutions"
+    puts "Type 'categories' to see all categories"
+    puts "Type 'edit' to edit a resolution"
     puts "Type 'delete' to delete a resolution"
     puts "Type 'exit' to exit"
     input = gets.chomp
@@ -62,6 +64,8 @@ EOF
       allresolutions
     elsif input == "delete"
       delete_resolution
+    elsif input == "categories"
+      allcategories
     elsif input == "exit"
       puts "Have a happy new year!!"
     elsif input == "fireworks"
@@ -100,7 +104,7 @@ EOF
 
     category = Category.find_or_create_by(name: input)
     ResolutionCategory.where(category: category).each do |c|
-      puts c.resolution.content
+      puts "\n" + c.resolution.content
     end
     home
   end
@@ -127,40 +131,46 @@ EOF
 
     if Resolution.exists?(content: input)
       delete_resolution = Resolution.find_by(content: input)
+      ResolutionCategory.where(resolution: delete_resolution).destroy
       delete_resolution.destroy
       home
     else
       puts "This resolution does not exist."
       home
     end
-
   end
 
 
   def allresolutions
     resolutions = Resolution.all
-    puts "\nResolutions for 2019: \n"
+    puts "\nResolutions for 2019: \n\n"
     i = 1
     resolutions.each do |r|
       puts "#{i.to_s}.  #{r.content}"
       i += 1
-      #puts "  categories: #{r.categories.name}"
+      puts "\ncategories:"
+      r.categories.each do |c|
+        puts "-" + c.name
+      end
+      puts "\n"
+    end
+    home
+  end
+
+  def allcategories
+    categories = Category.all
+    puts "\nCategories of Resolutions: \n"
+    categories.each do |c|
+      puts c.name
     end
     home
   end
 
 
 
-
-
-
-
-
-
-
   def run
-    fireworks
     show2019
+    fireworks
     greet
     #binding.pry
     home
